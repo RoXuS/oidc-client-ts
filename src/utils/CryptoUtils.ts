@@ -1,7 +1,4 @@
-import CryptoJS from "crypto-js/core.js";
-import sha256 from "crypto-js/sha256.js";
-import Base64 from "crypto-js/enc-base64.js";
-import Utf8 from "crypto-js/enc-utf8.js";
+import CryptoES from "crypto-es";
 
 import { Logger } from "./Logger";
 
@@ -12,7 +9,7 @@ const UUID_V4_TEMPLATE = "10000000-1000-4000-8000-100000000000";
  */
 export class CryptoUtils {
     private static _randomWord(): number {
-        return CryptoJS.lib.WordArray.random(1).words[0];
+        return CryptoES.lib.WordArray.random(1).words[0];
     }
 
     /**
@@ -37,8 +34,8 @@ export class CryptoUtils {
      */
     public static generateCodeChallenge(code_verifier: string): string {
         try {
-            const hashed = sha256(code_verifier);
-            return Base64.stringify(hashed).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+            const hashed = CryptoES.SHA256(code_verifier);
+            return CryptoES.enc.Base64.stringify(hashed).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
         }
         catch (err) {
             Logger.error("CryptoUtils.generateCodeChallenge", err);
@@ -50,7 +47,7 @@ export class CryptoUtils {
      * Generates a base64-encoded string for a basic auth header
      */
     public static generateBasicAuth(client_id: string, client_secret: string): string {
-        const basicAuth = Utf8.parse([client_id, client_secret].join(":"));
-        return Base64.stringify(basicAuth);
+        const basicAuth = CryptoES.enc.Utf8.parse([client_id, client_secret].join(":"));
+        return CryptoES.enc.Base64.stringify(basicAuth);
     }
 }
